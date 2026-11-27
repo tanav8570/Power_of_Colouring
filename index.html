@@ -1,0 +1,898 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>The Power of Colouring</title>
+<meta name="description" content="One small idea, colouring things in, that settles puzzles about tiles, guards, parties, rent and two problems nobody has solved. An interactive exposition.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+<style>/* The Power of Colouring: squared-paper notebook, felt-tip colours */
+:root{
+  --paper:#FBFCFF; --rule:#DCE5F6; --ink:#1B2440; --soft:#56607D; --sheet:#FFFFFF;
+  --c0:#2F6DE1; --c1:#F08A24; --c2:#12A37F; --c3:#E0457B; --c4:#F2C230; --c5:#7C5CD6; --c6:#58B7E8;
+  --display:"Bricolage Grotesque","Avenir Next","Segoe UI",system-ui,sans-serif;
+  --body:"Source Serif 4","Iowan Old Style","Palatino Linotype",Georgia,serif;
+  --cell:28px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;color:var(--ink);font-family:var(--body);font-size:19px;line-height:1.62;
+  background-color:var(--paper);
+  background-image:linear-gradient(var(--rule) 1px,transparent 1px),linear-gradient(90deg,var(--rule) 1px,transparent 1px);
+  background-size:var(--cell) var(--cell);}
+#progress{position:fixed;top:0;left:0;height:5px;width:0;z-index:10;
+  background:linear-gradient(90deg,var(--c0) 0 25%,var(--c1) 25% 50%,var(--c2) 50% 75%,var(--c3) 75%);background-size:112px 5px}
+main,header.hero,footer{max-width:700px;margin:0 auto;padding:0 20px}
+header.hero{padding-top:84px;padding-bottom:28px}
+.band{display:grid;grid-template-columns:repeat(16,1fr);gap:0;max-width:448px;margin-bottom:34px;border:2px solid var(--ink)}
+.band i{aspect-ratio:1;display:block;opacity:0;animation:ink .35s forwards}
+@keyframes ink{to{opacity:1}}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(2.6rem,8vw,4.6rem);line-height:.98;letter-spacing:-.03em;margin:0 0 18px}
+.standfirst{font-size:1.28rem;line-height:1.45;max-width:34em;margin:0 0 18px}
+.byline{font-family:var(--display);font-size:.95rem;color:var(--soft);margin:0}
+h2{font-family:var(--display);font-weight:800;font-size:clamp(1.7rem,4.6vw,2.35rem);line-height:1.08;letter-spacing:-.02em;margin:3.2em 0 .6em;scroll-margin-top:24px}
+h3{font-family:var(--display);font-weight:700;font-size:1.3rem;line-height:1.2;margin:2.2em 0 .4em}
+.part{font-family:var(--display);font-weight:700;font-size:1.05rem;margin:5em 0 -2.6em;display:flex;align-items:center;gap:10px}
+.part::before{content:"";width:28px;height:28px;border:2px solid var(--ink);background:var(--pc,var(--c0))}
+p{margin:0 0 1.05em}
+a{color:var(--c0);text-decoration-thickness:1.5px;text-underline-offset:3px}
+a:hover{color:var(--ink)}
+strong{font-weight:700}
+.key{border-left:8px solid var(--c1);background:var(--sheet);padding:14px 18px;margin:1.6em 0;font-size:1.08rem;border-top:1.5px solid var(--ink);border-right:1.5px solid var(--ink);border-bottom:1.5px solid var(--ink)}
+.key p:last-child{margin:0}
+nav.toc{background:var(--sheet);border:2px solid var(--ink);padding:16px 20px;margin:24px 0 0;font-family:var(--display);font-size:.98rem;line-height:1.5}
+nav.toc ol{margin:0;padding-left:1.3em;columns:2;column-gap:28px}
+nav.toc a{color:var(--ink);text-decoration:none;border-bottom:1.5px solid var(--rule)}
+nav.toc a:hover{border-color:var(--c3)}
+/* figures */
+figure.fig{margin:2em -100px 2.2em;background:var(--sheet);border:2px solid var(--ink);padding:18px 20px 14px}
+figure.fig figcaption{font-family:var(--display);font-size:.93rem;line-height:1.4;color:var(--soft);margin-top:12px;border-top:1.5px dashed var(--rule);padding-top:10px}
+figure.fig figcaption b{color:var(--ink)}
+.widget{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:22px;align-items:start}
+.widget.wide{grid-template-columns:1fr}
+.widget svg{width:100%;height:auto;display:block;touch-action:manipulation;user-select:none}
+.side{font-family:var(--display);font-size:.95rem;line-height:1.4}
+.controls{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;align-items:center}
+button.btn,.seg button{font:600 .9rem var(--display);color:var(--ink);background:var(--sheet);border:1.5px solid var(--ink);padding:7px 12px;cursor:pointer;border-radius:999px}
+button.btn:hover{background:var(--c4)}
+button.btn.primary{background:var(--ink);color:#fff}
+button.btn.primary:hover{background:var(--c0)}
+.seg{display:inline-flex;flex-wrap:wrap;gap:5px}
+.seg button{border-radius:8px}
+.seg button[aria-pressed=true]{background:var(--ink);color:#fff}
+button:focus-visible,a:focus-visible,input:focus-visible,summary:focus-visible,svg [tabindex]:focus-visible{outline:3px solid var(--c3);outline-offset:2px}
+label.slider{display:grid;grid-template-columns:5.6em 1fr 3em;gap:8px;align-items:center;margin-bottom:6px}
+label.slider output{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+input[type=range]{accent-color:var(--ink);width:100%}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:8px 0}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1.5px solid var(--ink);padding:3px 9px 3px 4px;border-radius:6px;font-variant-numeric:tabular-nums;background:#fff}
+.chip i{width:18px;height:18px;display:inline-block;border:1.5px solid var(--ink)}
+.note{margin:8px 0 0}
+.verdict{margin-top:10px;padding:9px 12px;border:1.5px solid var(--ink);font-weight:600}
+.verdict.no{background:#FDE3EC}
+.verdict.yes{background:#DDF4EC}
+.verdict.hmm{background:#FFF3C9}
+.big{font-size:1.5rem;font-weight:800;font-variant-numeric:tabular-nums}
+details.deep{background:var(--sheet);border:1.5px solid var(--ink);margin:1.6em 0;padding:0 18px}
+details.deep summary{font-family:var(--display);font-weight:700;cursor:pointer;padding:12px 0;list-style-position:outside}
+details.deep[open]{padding-bottom:6px}
+details.deep[open] summary{border-bottom:1.5px dashed var(--rule);margin-bottom:12px}
+table.plain{border-collapse:collapse;font-family:var(--display);font-size:.95rem;margin:1em 0 1.4em;background:#fff}
+table.plain th,table.plain td{border:1.5px solid var(--ink);padding:6px 12px;text-align:left}
+.neck{display:flex;flex-wrap:wrap;gap:6px}
+.neck button{background:#fff;border:1.5px solid var(--rule);padding:2px;cursor:pointer;line-height:0;border-radius:8px;position:relative}
+.neck button[aria-pressed=true]{border-color:var(--ink);background:var(--c4)}
+.neck button span{position:absolute;right:2px;bottom:1px;font:700 .68rem var(--display);line-height:1;background:#fff;padding:1px 2px;border-radius:3px}
+.rot{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;min-height:44px}
+ol.refs{font-size:.92rem;line-height:1.45;padding-left:1.4em}
+ol.refs li{margin-bottom:.5em}
+footer{font-family:var(--display);font-size:.9rem;color:var(--soft);padding-top:40px;padding-bottom:80px}
+sup{line-height:0}
+@media (max-width:940px){figure.fig{margin-left:-8px;margin-right:-8px;padding:14px 12px 12px}}
+@media (max-width:680px){body{font-size:17.5px}.widget{grid-template-columns:1fr}nav.toc ol{columns:1}header.hero{padding-top:56px}}
+@media (prefers-reduced-motion:reduce){.band i{animation:none;opacity:1}html{scroll-behavior:auto}}
+
+.neck svg,.rot svg{width:46px;height:46px;flex:none}
+</style>
+</head>
+<body>
+<div id="progress" aria-hidden="true"></div>
+
+<header class="hero">
+  <div class="band" id="band" aria-hidden="true"></div>
+  <h1>The power of colouring</h1>
+  <p class="standfirst">Take a puzzle you cannot solve. Colour it in. Count the colours. Surprisingly often, the answer is then sitting in front of you. This is a tour of that one idea, from a board of tiles to two questions that nobody on Earth can answer yet.</p>
+  <p class="byline">By Tanav Gupta, for the Vedanta Ganita Samanwaya exploratory phase. Every figure on this page is live: click, drag and try to break it.</p>
+  <nav class="toc" aria-label="Contents">
+    <ol>
+      <li><a href="#puzzle">A puzzle with no way in</a></li>
+      <li><a href="#hooked">How I got hooked</a></li>
+      <li><a href="#chessboard">The oldest trick on the board</a></li>
+      <li><a href="#limits">Where counting goes blind</a></li>
+      <li><a href="#knight">A knight has two colours</a></li>
+      <li><a href="#explore">Does my trick always work?</a></li>
+      <li><a href="#rectangles">Whole-number rectangles</a></li>
+      <li><a href="#necklaces">Necklaces and a 1640 theorem</a></li>
+      <li><a href="#gallery">Guarding a gallery</a></li>
+      <li><a href="#party">Six people at a party</a></li>
+      <li><a href="#coins">Colouring by coin flip</a></li>
+      <li><a href="#sperner">A triangle that must have a rainbow</a></li>
+      <li><a href="#everyday">Colouring you already do</a></li>
+      <li><a href="#frontier">Where nobody knows the answer</a></li>
+      <li><a href="#end">One idea, and a puzzle for you</a></li>
+    </ol>
+  </nav>
+</header>
+
+<main>
+
+<h2 id="puzzle">A puzzle with no way in</h2>
+<p>Here is a 10 × 10 board and a pile of strips, each covering four squares in a straight line. 100 squares, 25 strips: the arithmetic says they should fit. Try it.</p>
+
+<figure class="fig"><div id="w-strips"></div>
+<figcaption><b>Try it.</b> Play first with no colours. Then switch on each colouring in turn and watch the counts while you place strips.</figcaption></figure>
+
+<p>You will reach 24 strips and stall, with four squares that refuse to line up. But failing a thousand times proves nothing. Maybe the right arrangement is one you have not tried.</p>
+<p>Switch on <strong>Chessboard</strong>, the colouring everyone tries first. It fails: 50 squares of each colour, every strip covers two of each, and nothing is contradicted. The colouring is correct, and blind.</p>
+<p>Now switch on <strong>Diagonals, 4 colours</strong>. A strip walking four steps in a straight line crosses four diagonals in a row, so wherever it lies it covers exactly one blue, one orange, one green and one pink square. 25 strips would need 25 of each. The board has 25, 26, 25 and only <strong>24 pink</strong>. The puzzle is impossible, and we never examined a single arrangement.</p>
+
+<div class="key"><p><strong>The method in three steps.</strong> Colour the board so that every piece is forced to take the same share of each colour. Count the colours on the board. If the board's share is different, no arrangement can ever work.</p></div>
+
+<h2 id="hooked">How I got hooked</h2>
+<p>I met this idea on an olympiad problem sheet about grids. My teacher handed us problems before teaching the method, so nobody told me to colour anything. I only knew that the squares were all identical, and identical squares give you nothing to hold on to. Colouring is a way of giving them names.</p>
+<p>My first attempt was the chessboard, and it told me nothing. What I enjoyed was that the failure pointed to what I needed: a pattern that a strip cannot treat evenly. Blocks of 2 × 2 work (52 against 48). Diagonals work best, because you can see why at a glance. Later I met a problem where giving diametrically opposite points the same colour cracked it open, and I began to suspect the idea was much bigger than grids.</p>
+<p>It is. The same move decides how many guards a museum needs, finds three mutual friends or strangers at any party of six, splits rent fairly, and sits inside two problems that nobody has solved.</p>
+
+<p class="part" style="--pc:var(--c3)">Part one: colouring proves that something is impossible</p>
+
+<h2 id="chessboard">The oldest trick on the board</h2>
+<p>Cut two diagonally opposite corners off a chessboard. Can 31 dominoes cover the 62 squares that are left?</p>
+
+<figure class="fig"><div id="w-domino"></div>
+<figcaption><b>Try it.</b> Click any square to remove it (the board keeps your last two choices). Whenever a tiling exists, the page finds one and draws it.</figcaption></figure>
+
+<p>Here the plain chessboard is exactly the right colouring. A domino always covers one dark and one light square. Opposite corners share a colour, so removing them leaves 30 of one and 32 of the other, and 31 dominoes need 31 of each.</p>
+<p>My four-colour diagonals would be useless here: a domino covers two neighbouring diagonals, whose colours change as it moves, so it takes no fixed share. The colouring has to fit the piece. Remove one dark and one light square instead, anywhere, and the page always finds a tiling. That is a theorem of Ralph Gomory. Solomon Golomb turned arguments like this into a subject of their own in 1954.<sup><a href="#r1">1</a></sup></p>
+
+<h2 id="limits">Where counting goes blind</h2>
+<p>If the colours balance, must a tiling exist?</p>
+
+<figure class="fig"><div id="w-domino2"></div>
+<figcaption><b>Try it.</b> This board has 30 dark and 30 light squares, yet it cannot be tiled. Look at the top-left corner, then make your own examples.</figcaption></figure>
+
+<p>The corner square has lost both its neighbours, so no domino can ever reach it, yet the colours balance perfectly. A colour count is a necessary condition, never a sufficient one. When the count fails, you have a proof. When it passes, you have only learned that this colouring cannot see the problem. Catching the stuck corner needs a different idea: pairing each dark square with a light neighbour, and noticing that the corner has nobody to pair with.</p>
+
+<details class="deep"><summary>Go deeper: colours that are numbers</summary>
+<p>A colouring is just a label on each square that keeps some total fixed, and the labels can be numbers. In Conway's Soldiers, pegs fill every square below a line and move by peg-solitaire jumps. John Conway gave each square a weight built from the golden ratio, so that no jump can increase the total. Everything below the line adds up to exactly the weight of one square five rows up, and you only ever have finitely many pegs. So no peg can reach row five.</p></details>
+
+<h2 id="knight">A knight has two colours</h2>
+<p>Whatever a knight does, it lands on the opposite colour.</p>
+
+<figure class="fig"><div id="w-knight"></div>
+<figcaption><b>Try it.</b> Click a white dot to move the knight. Try to get home in an odd number of moves.</figcaption></figure>
+
+<p>So after an odd number of moves it is on the wrong colour and cannot be home. One sentence rules out every odd route at once. Colouring by rows would fail: a knight moves one or two rows, so the row colour sometimes flips and sometimes does not. The chessboard is the colouring that flips every time. A consequence: a knight can never visit every square of a 5 × 5 board and return to its start, because that round trip takes 25 moves.</p>
+
+<h2 id="explore">Does my trick always work?</h2>
+<p>I wanted to know whether the diagonals were a lucky fit for 10 × 10. So take any board and strips of any length <em>k</em>, and colour the diagonals with <em>k</em> repeating colours.</p>
+
+<figure class="fig"><div id="w-explore"></div>
+<figcaption><b>Try it.</b> Look for a board where the area is fine and the colours balance, but the strips still do not fit. You will not find one.</figcaption></figure>
+
+<p>If <em>k</em> divides a side, the strips line up and the colours are exactly equal. Otherwise the colours come out unequal, and the board is impossible. There is no third case:</p>
+<div class="key"><p>A rectangle can be covered by 1 × <em>k</em> strips <strong>exactly when <em>k</em> divides one of its sides.</strong> Counting area alone cannot see this: 4 divides 100, yet 10 × 10 fails.</p></div>
+<p>This is a theorem of N. G. de Bruijn and David Klarner from 1969, and the colouring I had stumbled on is its standard proof.<sup><a href="#r2">2</a></sup> I checked every board up to 12 × 12 by computer before I believed it.</p>
+
+<details class="deep"><summary>Go deeper: where the diagonals fail and the chessboard wins</summary>
+<p>Can T-shaped pieces of four squares cover a 10 × 10 board? Diagonal colouring says nothing, because a T takes no fixed share of the diagonals. The chessboard does: a T always covers three squares of one colour and one of the other, an odd number of dark squares. 25 pieces give an odd total, but the board has 50 dark squares. Impossible. Choosing the colouring to suit the piece is the real skill.</p></details>
+
+<h2 id="rectangles">Rectangles with a whole-number side</h2>
+<p>A large rectangle is cut into smaller ones, and each small rectangle has at least one side of whole-number length. Must the large rectangle have one too? Nothing here sits on a grid, so where would the colours go? The trick is to colour the plane itself, as a chessboard of <strong>half-unit</strong> squares.</p>
+
+<figure class="fig"><div id="w-rects"></div>
+<figcaption><b>Try it.</b> Give the rectangle a whole-number width and slide it: it stays balanced. Then pin its corner to (0, 0) and try to balance it with no whole-number side.</figcaption></figure>
+
+<p>Two facts do all the work. A rectangle with a whole-number side is balanced wherever it sits, because every unit of length is half one colour and half the other. A rectangle cornered at (0, 0) is balanced only if a side is whole. Now pin the large rectangle to the corner. Its pieces are balanced, so it is balanced, so one of its sides is whole.</p>
+<p>The size of the squares matters. With ordinary unit squares the argument collapses: a 1 × 1 square at the corner is entirely one colour, so a whole-number side no longer means balanced. The colouring must be built to detect exactly the property you care about. Stan Wagon collected fourteen proofs of this theorem;<sup><a href="#r3">3</a></sup> this is the one I would show a friend.</p>
+
+<p class="part" style="--pc:var(--c4)">Part two: colouring counts things</p>
+
+<h2 id="necklaces">Necklaces and a theorem from 1640</h2>
+<p>Colour 5 beads in a row, blue or orange: 32 ways. Join the ends into a necklace, and strings that are rotations of each other become the same necklace.</p>
+
+<figure class="fig"><div id="w-necklaces"></div>
+<figcaption><b>Try it.</b> Each necklace shows how many strings it stands for. Compare 3, 5 or 7 beads with 4 or 6.</figcaption></figure>
+
+<p>The two single-colour necklaces stand alone, and every other one stands for exactly 5 strings. So 32 − 2 = 30 splits into groups of 5. Why exactly 5? A necklace that looks the same after a smaller turn must repeat in blocks, and the block length would divide 5. A prime has no such divisors. With 4 or 6 beads the argument fails in front of you: patterns like blue-orange-blue-orange repeat early and form smaller groups.</p>
+<div class="key"><p><strong>Fermat's little theorem.</strong> If <em>p</em> is prime, then <em>a</em><sup><em>p</em></sup> − <em>a</em> is divisible by <em>p</em>. Colour <em>p</em> beads with <em>a</em> colours, set aside the <em>a</em> single-colour necklaces, and the rest fall into groups of exactly <em>p</em>.</p></div>
+<p>Fermat stated it in 1640. This bead proof was published by Golomb in 1956.<sup><a href="#r4">4</a></sup> The theorem now sits underneath the encryption that protects online payments.</p>
+
+<p class="part" style="--pc:var(--c2)">Part three: colouring proves that something must exist</p>
+
+<h2 id="gallery">Guarding a gallery</h2>
+<p>A gallery has straight walls and <em>n</em> corners. Guards stand still and see in every direction, but not through walls. How many guards are always enough?</p>
+
+<figure class="fig"><div id="w-gallery"></div>
+<figcaption><b>Try it.</b> Step through the four stages. In stage 4, try guards on each colour: all three work, so hire the smallest group.</figcaption></figure>
+
+<p>The obvious approach is to cut the floor into triangles and put a guard in each one. That needs <em>n</em> − 2 guards, far too many. Steve Fisk's colouring does three times better.<sup><a href="#r5">5</a></sup> Colour the corners with three colours so that every triangle gets one of each. This is always possible: neighbouring triangles share two corners, which forces the colour of the third. Now every triangle has a corner of every colour, so guards on <em>any one</em> colour watch the whole floor. Three colours share <em>n</em> corners, so the rarest has at most <em>n</em> ÷ 3.</p>
+<p>The comb shows this cannot be improved: each of its four spikes needs a guard of its own. Notice the change of direction. In part one, colouring proved that no arrangement exists. Here it builds one, for every gallery that could ever be drawn.</p>
+
+<h2 id="party">Six people at a party</h2>
+<p>Any two people at a party are either friends or strangers. Among any six, there are always three mutual friends or three mutual strangers. Colour each link pink for friends and blue for strangers: the claim is that a one-colour triangle is unavoidable.</p>
+
+<figure class="fig"><div id="w-party"></div>
+<figcaption><b>Try it.</b> Colour all 15 links without a one-colour triangle. When you give up, press the dark button and let the page try every colouring there is.</figcaption></figure>
+
+<p>Brute force confirms it, since none of the 32,768 colourings escapes, but it explains nothing. The colouring argument takes three lines. Asha has five links in only two colours, so three of them match, say pink to Bilal, Chen and Divya. If any two of those three are friends, they make a pink triangle with Asha. If none are, the three of them are a blue triangle.</p>
+<p>With five people the argument breaks, because Asha has only four links and they can split two and two. Press <strong>Show the escape for 5</strong>: a pink pentagon with a blue star inside. My search found exactly 12 escapes among 1,024 colourings, all this same pattern placed differently. This is the first step of Ramsey theory, whose message, in Theodore Motzkin's words, is that complete disorder is impossible.</p>
+
+<h2 id="coins">Colouring by coin flip</h2>
+<p>Six people force a triangle; 18 force four mutual friends or strangers. How fast do these numbers grow? To show that a big party can <em>avoid</em> a large one-colour group, you must produce a colouring, and building one by hand fails badly. In 1947 Paul Erdős stopped building. He flipped a coin for every link.<sup><a href="#r6">6</a></sup></p>
+
+<figure class="fig"><div id="w-erdos"></div>
+<figcaption><b>Try it.</b> Flip the coins, then run 2,000 colourings and compare with the theory. Raise the number of people and watch the average cross 1.</figcaption></figure>
+
+<p>Six people, groups of four. There are 15 groups, and each is one colour only if its six links all agree: a chance of 1 in 32. So a random colouring has 15 ÷ 32 ≈ 0.47 one-colour groups on average. But each colouring has a whole number of them. If the average is below 1, some colouring has exactly 0. It is like a league averaging under one goal a match: some match ended goalless.</p>
+<p>The power shows at scale. For 1,000 people and groups of 20 the average is about 0.0000000000000004, so a clean colouring certainly exists, and almost every random one works. Yet nobody can write one down: no known recipe builds colourings nearly as good as the ones coins find. This is the probabilistic method, now one of the main tools of combinatorics, and the strangest use of colouring on this page. We do not even choose the colours.</p>
+
+<h2 id="sperner">A triangle that must have a rainbow</h2>
+<p>A big triangle is cut into small ones, and every dot gets one of three colours. Two rules: the big corners get three different colours, and a dot on a side may only use the two colours at the ends of that side. Inside, anything goes.</p>
+
+<figure class="fig"><div id="w-sperner"></div>
+<figcaption><b>Try it.</b> Recolour dots and try to destroy every yellow triangle. Then press <b>Show the walks</b> to see why you cannot.</figcaption></figure>
+
+<p>Some small triangle always gets all three colours. In fact the number of them is always odd. This is Sperner's lemma, from 1928. Call an edge with one blue end and one orange end a <em>door</em>. Enter through a door on the bottom side. A room with all three colours has exactly one door; every other room has none or two. So a walk through doors either ends in a rainbow room or comes back out through the bottom. The bottom side runs from blue to orange, so it has an odd number of doors. Walks that come back out use them in pairs, so one walk is left over, and it ends in a rainbow.</p>
+<p>The side rule is what makes this work. Break it, by colouring every dot blue except the three corners, and there is no rainbow anywhere.</p>
+<h3>Splitting the rent</h3>
+<p>Three friends rent a flat with three different rooms. Can the rent always be split so that nobody envies anyone? Francis Su showed it can.<sup><a href="#r7">7</a></sup> Each point of the triangle is one way to split the rent. Each dot is handed to one friend, who answers: at these prices, which room would you take? The answer is the dot's colour. A rainbow triangle is three almost identical price splits where three different people want three different rooms. Shrink the triangles and you have prices that make everyone content.</p>
+
+<p class="part" style="--pc:var(--c0)">Part four: colouring in the wild</p>
+
+<h2 id="everyday">Colouring you already do</h2>
+<p>Draw a dot for each exam, join two exams if some student takes both, and treat time slots as colours. A clash-free timetable is a colouring in which joined dots never match.</p>
+
+<figure class="fig"><div id="w-timetable"></div>
+<figcaption><b>Try it.</b> Click an exam to move it through the slots. Use as few slots as you can.</figcaption></figure>
+
+<p>Three slots always fail. Algebra, Physics, Programming, Probability and Chemistry form a ring of five, a ring of odd length needs three colours, and Calculus clashes with all five, so it needs a fourth. Maps (four colours always suffice: guessed in 1852, proved by computer in 1976), Sudoku (81 cells, nine colours) and mobile-tower frequencies are the same problem. Deciding whether two colours suffice is easy: alternate. Deciding whether three suffice is believed to be genuinely hard, and is tied to the P versus NP problem.</p>
+
+<p class="part" style="--pc:var(--c5)">Part five: the frontier</p>
+
+<h2 id="frontier">Where nobody knows the answer</h2>
+<h3>Five friends or five strangers</h3>
+<table class="plain">
+<tr><th>Group size wanted</th><th>People needed</th></tr>
+<tr><td>3</td><td>6</td></tr>
+<tr><td>4</td><td>18</td></tr>
+<tr><td>5</td><td>somewhere from 43 to 46</td></tr>
+</table>
+<p>In 1989 Geoffrey Exoo found a colouring of 42 people with no one-colour group of five. In 2024 Vigleik Angeltveit and Brendan McKay proved, with a large double-checked computer search, that 46 always force one.<sup><a href="#r8">8</a></sup> Brute force cannot close the gap: 43 people have 903 links, so 2<sup>903</sup> colourings, a number with 272 digits. Erdős joked that if aliens demanded this number on pain of destroying Earth, we should set every mathematician and computer to work on it.</p>
+
+<h3>Colouring the whole plane</h3>
+<p>In 1950 Edward Nelson, then 18, asked: colour every point of the plane so that points exactly 1 apart never match. How few colours can do it? Seven are enough, using hexagons a little under 1 across, so no two points in one tile are 1 apart, and tiles of the same colour sit more than 1 apart.</p>
+
+<figure class="fig"><div id="w-plane"></div>
+<figcaption><b>Try it.</b> Move the pointer (or tap). The ring shows every point exactly 1 away from yours. It never reaches your colour.</figcaption></figure>
+
+<p>Three colours fail, and the proof is seven points joined by eleven links of length exactly 1, the Moser spindle.</p>
+
+<figure class="fig"><div id="w-moser"></div>
+<figcaption><b>Try it.</b> With three colours a clash always remains. Switch to four and it becomes possible.</figcaption></figure>
+
+<p>So the answer was between 4 and 7 for almost seventy years. In 2018 Aubrey de Grey, a biologist who worked on it as a hobby, found 1,581 points that four colours cannot handle.<sup><a href="#r9">9</a></sup> The answer is 5, 6 or 7, and nobody knows which. A better pattern would lower the 7; a cleverer set of points would raise the 5. Both are searches for a colouring.</p>
+
+<h2 id="end">One idea, and a puzzle for you</h2>
+<p>On this page colouring <strong>counted</strong> and found a mismatch (strips, dominoes, rectangles), <strong>tracked</strong> what cannot change (the knight), <strong>sorted</strong> objects into equal groups (necklaces), <strong>built</strong> a solution (guards), and <strong>forced</strong> a pattern to exist (parties, rainbows, coin flips). The colours are never in the problem. We add them, and choosing them is where the creativity lies. My first chessboard colouring of the strip puzzle was not wrong. It was just looking at the wrong thing.</p>
+<p>I will end the way my teacher began, with a problem and no method. An 8 × 8 board has one corner removed. Can 21 strips of three cover the other 63 squares?</p>
+
+<figure class="fig"><div id="w-final"></div>
+<figcaption><b>Your turn.</b> Decide whether it can be done. Then use <b>Move the missing square</b> to find which squares you could remove instead.</figcaption></figure>
+
+<details class="deep"><summary>A hint, if you want one</summary>
+<p>One direction of diagonals gives a condition on the missing square, and the other direction gives a second. Only four squares pass both. Colouring cannot tell you whether those four really work, so for them you have to find a tiling yourself.</p></details>
+
+<h2 id="made">How this was made</h2>
+<p>The starting point, the diagonal colouring of grid problems, comes from my own olympiad practice, and I described it in my application to this camp. To turn it into this page I worked with Claude, an AI model made by Anthropic. Claude helped me survey the literature, suggested several of the problems, and wrote the code for the interactive figures. Every number on the page was checked by a program, and the program that does it, <code>check_claims.py</code>, is in the repository. I tried to include every colouring problem that I once stumbled upon, or in which colouring is applied beautifully.</p>
+
+<h2 id="refs">References</h2>
+<ol class="refs">
+<li id="r1">S. W. Golomb, "Checker Boards and Polyominoes," <em>American Mathematical Monthly</em> 61 (1954), 675–682.</li>
+<li id="r2">N. G. de Bruijn, "Filling Boxes with Bricks," <em>American Mathematical Monthly</em> 76 (1969), 37–40. See also Yufei Zhao's notes <a href="https://yufeizhao.com/olympiad/tiling.pdf">Tiling: Coloring and Weights</a>.</li>
+<li id="r3">S. Wagon, "Fourteen Proofs of a Result About Tiling a Rectangle," <em>American Mathematical Monthly</em> 94 (1987), 601–617. <a href="https://maa.org/node/113770">MAA summary</a>.</li>
+<li id="r4">S. W. Golomb, "Combinatorial Proof of Fermat's 'Little' Theorem," <em>American Mathematical Monthly</em> 63 (1956), 718.</li>
+<li id="r5">V. Chvátal, <a href="https://doi.org/10.1016/0095-8956(75)90061-1">"A Combinatorial Theorem in Plane Geometry,"</a> <em>J. Combin. Theory B</em> 18 (1975), 39–41. S. Fisk, <a href="https://doi.org/10.1016/0095-8956(78)90059-x">"A Short Proof of Chvátal's Watchman Theorem,"</a> <em>J. Combin. Theory B</em> 24 (1978), 374.</li>
+<li id="r6">P. Erdős, <a href="https://www.ams.org/journals/bull/1947-53-04/S0002-9904-1947-08785-1/S0002-9904-1947-08785-1.pdf">"Some Remarks on the Theory of Graphs,"</a> <em>Bulletin of the AMS</em> 53 (1947), 292–294.</li>
+<li id="r7">F. E. Su, <a href="https://scholarship.claremont.edu/hmc_fac_pub/663">"Rental Harmony: Sperner's Lemma in Fair Division,"</a> <em>American Mathematical Monthly</em> 106 (1999), 930–942.</li>
+<li id="r8">G. Exoo, "A Lower Bound for R(5,5)," <em>Journal of Graph Theory</em> 13 (1989), 97–98. V. Angeltveit and B. D. McKay, <a href="https://arxiv.org/abs/2409.15709">"R(5,5) ≤ 46,"</a> arXiv:2409.15709 (2024).</li>
+<li id="r9">A. D. N. J. de Grey, <a href="https://arxiv.org/abs/1804.02385">"The Chromatic Number of the Plane Is at Least 5,"</a> <em>Geombinatorics</em> 28 (2018). Current status: <a href="https://www.erdosproblems.com/508">Erdős Problems #508</a>.</li>
+<li>A. Soifer, <em>The Mathematical Coloring Book</em>, Springer, 2008. A history of colouring problems and the people behind them.</li>
+</ol>
+</main>
+
+
+<footer>
+<p>By Tanav Gupta, 2026.</p>
+</footer>
+
+<script>/* Shared helpers for every figure. No dependencies. */
+(function () {
+  const C = (window.Colouring = {});
+  const NS = 'http://www.w3.org/2000/svg';
+  C.PAL = ['#2F6DE1', '#F08A24', '#12A37F', '#E0457B', '#F2C230', '#7C5CD6', '#58B7E8'];
+  C.NAMES = ['blue', 'orange', 'green', 'pink', 'yellow', 'violet', 'sky'];
+  C.INK = '#1B2440';
+  C.mix = (hex, t) => {            // blend a colour towards white by t (0..1)
+    const n = parseInt(hex.slice(1), 16), ch = [n >> 16, (n >> 8) & 255, n & 255];
+    return '#' + ch.map(v => Math.round(v + (255 - v) * t).toString(16).padStart(2, '0')).join('');
+  };
+  C.svg = (tag, attrs, parent) => {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  };
+  C.el = (tag, attrs, parent, html) => {
+    const e = document.createElement(tag);
+    for (const k in attrs || {}) e.setAttribute(k, attrs[k]);
+    if (html != null) e.innerHTML = html;
+    if (parent) parent.appendChild(e);
+    return e;
+  };
+  C.button = (label, fn, parent, cls) => {
+    const b = C.el('button', { class: 'btn' + (cls ? ' ' + cls : ''), type: 'button' }, parent, label);
+    b.addEventListener('click', fn);
+    return b;
+  };
+  C.seg = (opts, start, fn, parent) => {
+    const box = C.el('div', { class: 'seg', role: 'group' }, parent), btns = {};
+    const set = id => { for (const k in btns) btns[k].setAttribute('aria-pressed', String(k === String(id))); };
+    opts.forEach(o => {
+      btns[o.id] = C.el('button', { type: 'button' }, box, o.label);
+      btns[o.id].addEventListener('click', () => { set(o.id); fn(o.id); });
+    });
+    set(start);
+    return { set };
+  };
+  C.slider = (label, min, max, step, val, fn, parent, fmt) => {
+    fmt = fmt || (v => v);
+    const l = C.el('label', { class: 'slider' }, parent);
+    C.el('span', {}, l, label);
+    const i = C.el('input', { type: 'range', min, max, step, value: val }, l);
+    const o = C.el('output', {}, l, fmt(val));
+    i.addEventListener('input', () => { o.textContent = fmt(+i.value); fn(+i.value); });
+    return { get value() { return +i.value; }, set(v) { i.value = v; o.textContent = fmt(+i.value); } };
+  };
+  C.chip = (colour, text) => `<span class="chip"><i style="background:${colour}"></i>${text}</span>`;
+  C.frame = (host, wide) => {        // standard layout: drawing on the left, controls on the right
+    host.classList.add('widget'); if (wide) host.classList.add('wide');
+    const stage = C.el('div', { class: 'stage' }, host), side = C.el('div', { class: 'side' }, host);
+    const controls = C.el('div', { class: 'controls' }, side), out = C.el('div', { class: 'out', 'aria-live': 'polite' }, side);
+    return { stage, side, controls, out };
+  };
+  C.cellAt = (svg, ev, size, pad) => { // which grid cell is under the pointer
+    const r = svg.getBoundingClientRect(), vb = svg.viewBox.baseVal;
+    const x = (ev.clientX - r.left) * vb.width / r.width - (pad || 0), y = (ev.clientY - r.top) * vb.height / r.height - (pad || 0);
+    return [Math.floor(y / size), Math.floor(x / size), x, y];
+  };
+  C.mount = (id, fn) => { const h = document.getElementById(id); if (h) { try { fn(h); } catch (e) { console.error(id, e); } } };
+})();
+</script>
+<script>/* Figures that live on a grid: strips, dominoes, the knight, half-unit rectangles. */
+(function () {
+  const C = window.Colouring, { PAL, INK, svg, el, mix } = C;
+
+  /* ---------- 1. Strip board: place 1×k strips, switch colourings on and off ---------- */
+  C.stripBoard = function (host, o) {
+    const S = 40, P = 3, R = o.rows, N = o.cols, K = o.k;
+    const { stage, controls, out } = C.frame(host);
+    const s = svg('svg', { viewBox: `0 0 ${N * S + 2 * P} ${R * S + 2 * P}`, role: 'img', 'aria-label': `${R} by ${N} board` }, stage);
+    const gCells = svg('g', { transform: `translate(${P},${P})` }, s), gStrips = svg('g', { transform: `translate(${P},${P})` }, s), gPrev = svg('g', { transform: `translate(${P},${P})`, 'pointer-events': 'none' }, s);
+    let mode = o.modes[0], dir = 'h', strips = [], hole = o.hole || null, moving = false;
+    const cells = t => Array.from({ length: K }, (_, i) => t.dir === 'h' ? [t.r, t.c + i] : [t.r + i, t.c]);
+    const isHole = (r, c) => hole && hole[0] === r && hole[1] === c;
+    const occ = () => { const g = Array.from({ length: R }, () => Array(N).fill(-1)); strips.forEach((t, i) => cells(t).forEach(([r, c]) => g[r][c] = i)); return g; };
+    const fits = (t, g) => cells(t).every(([r, c]) => r >= 0 && c >= 0 && r < R && c < N && g[r][c] < 0 && !isHole(r, c));
+    const anchor = (r, c) => dir === 'h' ? { r, c: Math.min(c, N - K), dir } : { r: Math.min(r, R - K), c, dir };
+    const pal = m => m.pal || PAL;
+
+    function draw() {
+      const g = occ(); gCells.innerHTML = ''; gStrips.innerHTML = '';
+      for (let r = 0; r < R; r++) for (let c = 0; c < N; c++) {
+        let fill = '#fff';
+        if (isHole(r, c)) fill = INK;
+        else if (mode.fn) fill = g[r][c] >= 0 ? pal(mode)[mode.fn(r, c)] : mix(pal(mode)[mode.fn(r, c)], .58);
+        else if (g[r][c] >= 0) fill = '#C5CEE4';
+        svg('rect', { x: c * S, y: r * S, width: S, height: S, fill, stroke: INK, 'stroke-width': .8 }, gCells);
+      }
+      strips.forEach(t => svg('rect', { x: t.c * S + 3, y: t.r * S + 3, width: (t.dir === 'h' ? K : 1) * S - 6, height: (t.dir === 'h' ? 1 : K) * S - 6, rx: 9, fill: 'none', stroke: INK, 'stroke-width': 3 }, gStrips));
+      svg('rect', { x: 0, y: 0, width: N * S, height: R * S, fill: 'none', stroke: INK, 'stroke-width': 3 }, gStrips);
+      const total = R * N - (hole ? 1 : 0), need = total / K;
+      let h = `<div>Strips placed: <span class="big">${strips.length}</span> of ${need} needed</div>`;
+      if (mode.fn) {
+        const tot = Array(mode.n).fill(0), cov = Array(mode.n).fill(0);
+        for (let r = 0; r < R; r++) for (let c = 0; c < N; c++) if (!isHole(r, c)) { tot[mode.fn(r, c)]++; if (g[r][c] >= 0) cov[mode.fn(r, c)]++; }
+        h += '<div class="chips">' + tot.map((t, i) => C.chip(pal(mode)[i], `${t} squares, ${cov[i]} covered`)).join('') + '</div>';
+        h += `<div class="verdict ${mode.verdict(tot, need)[0]}">${mode.verdict(tot, need)[1]}</div>`;
+      } else h += `<p class="note">${o.plainNote || 'Click a square to lay a strip. Click a strip to lift it.'}</p>`;
+      if (moving) h += '<p class="note"><b>Now click the square you want to remove.</b></p>';
+      out.innerHTML = h;
+    }
+    s.addEventListener('pointermove', ev => {
+      gPrev.innerHTML = ''; if (moving || ev.pointerType === 'touch') return;
+      const [r, c] = C.cellAt(s, ev, S, P); if (r < 0 || c < 0 || r >= R || c >= N) return;
+      const g = occ(); if (g[r][c] >= 0) return;
+      const t = anchor(r, c), ok = fits(t, g);
+      svg('rect', { x: t.c * S + 3, y: t.r * S + 3, width: (dir === 'h' ? K : 1) * S - 6, height: (dir === 'h' ? 1 : K) * S - 6, rx: 9, fill: ok ? 'rgba(27,36,64,.18)' : 'rgba(224,69,123,.3)', stroke: ok ? INK : PAL[3], 'stroke-width': 2, 'stroke-dasharray': '5 4' }, gPrev);
+    });
+    s.addEventListener('pointerleave', () => gPrev.innerHTML = '');
+    s.addEventListener('click', ev => {
+      const [r, c] = C.cellAt(s, ev, S, P); if (r < 0 || c < 0 || r >= R || c >= N) return;
+      const g = occ();
+      if (moving) { if (g[r][c] < 0) { hole = [r, c]; moving = false; } }
+      else if (g[r][c] >= 0) strips.splice(g[r][c], 1);
+      else { const t = anchor(r, c); if (fits(t, g)) strips.push(t); }
+      gPrev.innerHTML = ''; draw();
+    });
+    const dirBtn = C.button('Strip direction: across', () => { dir = dir === 'h' ? 'v' : 'h'; dirBtn.textContent = 'Strip direction: ' + (dir === 'h' ? 'across' : 'down'); }, controls);
+    C.button('Clear board', () => { strips = []; draw(); }, controls);
+    if (o.best) C.button(o.bestLabel || 'Show the best possible', () => { strips = o.best(); draw(); }, controls);
+    if (o.movableHole) C.button('Move the missing square', () => { moving = true; draw(); }, controls);
+    C.seg(o.modes.map(m => ({ id: m.id, label: m.label })), mode.id, id => { mode = o.modes.find(m => m.id === id); draw(); }, controls);
+    draw();
+  };
+
+  /* ---------- 2. Strip explorer: any board, any strip length ---------- */
+  C.stripExplorer = function (host) {
+    const { stage, controls, out } = C.frame(host);
+    let m = 10, n = 10, k = 4;
+    const s = svg('svg', { viewBox: '0 0 486 486' }, stage);
+    function draw() {
+      s.innerHTML = ''; const S = Math.floor(480 / Math.max(m, n)), ox = 3 + (480 - n * S) / 2, oy = 3;
+      s.setAttribute('viewBox', `0 0 486 ${m * S + 6}`);
+      const tot = Array(k).fill(0), ok = m % k === 0 || n % k === 0;
+      for (let r = 0; r < m; r++) for (let c = 0; c < n; c++) { const col = (r + c) % k; tot[col]++; svg('rect', { x: ox + c * S, y: oy + r * S, width: S, height: S, fill: mix(PAL[col], ok ? .15 : .35), stroke: INK, 'stroke-width': .7 }, s); }
+      if (ok) {
+        const down = m % k === 0;
+        for (let r = 0; r < m; r += down ? k : 1) for (let c = 0; c < n; c += down ? 1 : k)
+          svg('rect', { x: ox + c * S + 2.5, y: oy + r * S + 2.5, width: (down ? 1 : k) * S - 5, height: (down ? k : 1) * S - 5, rx: Math.min(8, S / 4), fill: 'none', stroke: INK, 'stroke-width': 2.4 }, s);
+      }
+      svg('rect', { x: ox, y: oy, width: n * S, height: m * S, fill: 'none', stroke: INK, 'stroke-width': 3 }, s);
+      const even = tot.every(t => t === tot[0]);
+      let h = '<div class="chips">' + tot.map((t, i) => C.chip(PAL[i], t)).join('') + '</div>';
+      if (ok) h += `<div class="verdict yes">${k} divides ${m % k === 0 ? m : n}, so the strips simply line up. The colours are perfectly balanced: ${tot[0]} of each.</div>`;
+      else if ((m * n) % k) h += `<div class="verdict no">${m} × ${n} = ${m * n} squares, which is not a multiple of ${k}. No colouring needed: the area alone rules it out.</div>`;
+      else h += `<div class="verdict no">The area ${m * n} is a multiple of ${k}, so counting squares gives no objection. But the colours are unequal${even ? '' : ' (' + tot.join(', ') + ')'}, and every strip takes exactly one of each. Impossible.</div>`;
+      out.innerHTML = h;
+    }
+    C.slider('Rows', 1, 12, 1, m, v => { m = v; draw(); }, controls);
+    C.slider('Columns', 1, 12, 1, n, v => { n = v; draw(); }, controls);
+    C.slider('Strip length', 2, 6, 1, k, v => { k = v; draw(); }, controls);
+    draw();
+  };
+
+  /* ---------- 3. Domino board: remove squares, the page looks for a tiling ---------- */
+  C.dominoBoard = function (host, o) {
+    const S = 50, P = 3, N = 8, { stage, controls, out } = C.frame(host);
+    const s = svg('svg', { viewBox: `0 0 ${N * S + 2 * P} ${N * S + 2 * P}` }, stage), g0 = svg('g', { transform: `translate(${P},${P})` }, s);
+    let gone = (o.start || []).map(x => x.slice());
+    const DARK = '#56607D', LIGHT = '#fff';
+    const isGone = (r, c) => gone.some(x => x[0] === r && x[1] === c);
+    function match() {                       // Kuhn's augmenting-path matching: dark squares to light neighbours
+      const id = (r, c) => r * N + c, mate = new Map(), darks = [];
+      for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) if (!isGone(r, c) && (r + c) % 2 === 0) darks.push([r, c]);
+      const tryk = (r, c, seen) => {
+        for (const [dr, dc] of [[0, 1], [1, 0], [0, -1], [-1, 0]]) {
+          const rr = r + dr, cc = c + dc; if (rr < 0 || cc < 0 || rr >= N || cc >= N || isGone(rr, cc) || seen.has(id(rr, cc))) continue;
+          seen.add(id(rr, cc)); const cur = mate.get(id(rr, cc));
+          if (!cur || tryk(cur[0], cur[1], seen)) { mate.set(id(rr, cc), [r, c]); return true; }
+        } return false;
+      };
+      let size = 0; darks.forEach(([r, c]) => { if (tryk(r, c, new Set())) size++; });
+      return { size, pairs: [...mate.entries()].map(([k, d]) => [d, [Math.floor(k / N), k % N]]) };
+    }
+    function draw() {
+      g0.innerHTML = ''; let nd = 0, nl = 0;
+      for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) {
+        const dark = (r + c) % 2 === 0, x = isGone(r, c); if (!x) dark ? nd++ : nl++;
+        svg('rect', { x: c * S, y: r * S, width: S, height: S, fill: x ? '#FBFCFF' : dark ? DARK : LIGHT, stroke: INK, 'stroke-width': .8 }, g0);
+        if (x) { svg('path', { d: `M${c * S + 12} ${r * S + 12}l26 26m0-26l-26 26`, stroke: PAL[3], 'stroke-width': 4, 'stroke-linecap': 'round' }, g0); }
+      }
+      const res = match(), perfect = nd === nl && res.size === nd;
+      if (perfect) res.pairs.forEach(([a, b]) => svg('rect', { x: Math.min(a[1], b[1]) * S + 5, y: Math.min(a[0], b[0]) * S + 5, width: (a[0] === b[0] ? 2 : 1) * S - 10, height: (a[0] === b[0] ? 1 : 2) * S - 10, rx: 12, fill: 'rgba(242,194,48,.55)', stroke: INK, 'stroke-width': 2.6 }, g0));
+      svg('rect', { x: 0, y: 0, width: N * S, height: N * S, fill: 'none', stroke: INK, 'stroke-width': 3 }, g0);
+      let h = '<div class="chips">' + C.chip(DARK, `${nd} dark`) + C.chip(LIGHT, `${nl} light`) + '</div>';
+      if (nd !== nl) h += `<div class="verdict no">${nd} dark against ${nl} light. Each domino covers one of each, so no tiling can exist.</div>`;
+      else if (perfect) h += `<div class="verdict yes">${nd} dark, ${nl} light, and here is a tiling with ${nd} dominoes.</div>`;
+      else h += `<div class="verdict hmm">${nd} dark, ${nl} light: the colours balance. Yet no tiling exists. Counting colours cannot see this one.</div>`;
+      out.innerHTML = h;
+    }
+    s.addEventListener('click', ev => {
+      const [r, c] = C.cellAt(s, ev, S, P); if (r < 0 || c < 0 || r >= N || c >= N) return;
+      const i = gone.findIndex(x => x[0] === r && x[1] === c);
+      if (i >= 0) gone.splice(i, 1); else { gone.push([r, c]); if (o.max && gone.length > o.max) gone.shift(); }
+      draw();
+    });
+    (o.presets || []).forEach(p => C.button(p.label, () => { gone = p.cells.map(x => x.slice()); draw(); }, controls));
+    C.button('Put all squares back', () => { gone = []; draw(); }, controls);
+    draw();
+  };
+
+  /* ---------- 4. The knight ---------- */
+  C.knight = function (host) {
+    const S = 50, P = 3, N = 8, { stage, controls, out } = C.frame(host);
+    const s = svg('svg', { viewBox: `0 0 ${N * S + 2 * P} ${N * S + 2 * P}` }, stage), g0 = svg('g', { transform: `translate(${P},${P})` }, s);
+    let path = [[7, 1]];
+    const moves = ([r, c]) => [[1, 2], [2, 1], [-1, 2], [-2, 1], [1, -2], [2, -1], [-1, -2], [-2, -1]].map(([a, b]) => [r + a, c + b]).filter(([a, b]) => a >= 0 && b >= 0 && a < N && b < N);
+    function draw() {
+      g0.innerHTML = ''; const cur = path[path.length - 1], home = path[0], n = path.length - 1;
+      for (let r = 0; r < N; r++) for (let c = 0; c < N; c++) svg('rect', { x: c * S, y: r * S, width: S, height: S, fill: (r + c) % 2 ? mix(PAL[1], .25) : mix(PAL[0], .3), stroke: INK, 'stroke-width': .8 }, g0);
+      svg('rect', { x: home[1] * S + 4, y: home[0] * S + 4, width: S - 8, height: S - 8, fill: 'none', stroke: INK, 'stroke-width': 3, 'stroke-dasharray': '6 4' }, g0);
+      if (n) svg('polyline', { points: path.map(([r, c]) => `${c * S + S / 2},${r * S + S / 2}`).join(' '), fill: 'none', stroke: INK, 'stroke-width': 2.5, 'stroke-linejoin': 'round', opacity: .55 }, g0);
+      moves(cur).forEach(([r, c]) => svg('circle', { cx: c * S + S / 2, cy: r * S + S / 2, r: 9, fill: '#fff', stroke: INK, 'stroke-width': 2.5 }, g0));
+      svg('circle', { cx: cur[1] * S + S / 2, cy: cur[0] * S + S / 2, r: 19, fill: INK }, g0);
+      svg('text', { x: cur[1] * S + S / 2, y: cur[0] * S + S / 2 + 10, 'text-anchor': 'middle', 'font-size': 28, fill: '#fff' }, g0).textContent = '♞';
+      svg('rect', { x: 0, y: 0, width: N * S, height: N * S, fill: 'none', stroke: INK, 'stroke-width': 3 }, g0);
+      const col = p => (p[0] + p[1]) % 2 ? 1 : 0, same = col(cur) === col(home);
+      out.innerHTML = `<div>Moves made: <span class="big">${n}</span> (${n % 2 ? 'odd' : 'even'})</div><div class="chips">${C.chip(mix(PAL[col(home)], .3), 'home square')}${C.chip(mix(PAL[col(cur)], .3), 'knight is here')}</div>` +
+        `<div class="verdict ${same ? 'yes' : 'no'}">${same ? 'Even number of moves: the knight stands on its home colour.' : 'Odd number of moves: the knight stands on the other colour, so it cannot be home.'}</div>`;
+    }
+    s.addEventListener('click', ev => { const [r, c] = C.cellAt(s, ev, S, P); if (moves(path[path.length - 1]).some(m => m[0] === r && m[1] === c)) { path.push([r, c]); draw(); } });
+    C.button('Send the knight home and start again', () => { path = [path[0]]; draw(); }, controls);
+    draw();
+  };
+
+  /* ---------- 5. Half-unit checkerboard and a sliding rectangle ---------- */
+  C.rects = function (host) {
+    const U = 110, W = 4.5, H = 3.5, P = 26, { stage, controls, out } = C.frame(host);
+    const s = svg('svg', { viewBox: `0 0 ${W * U + P + 6} ${H * U + P + 6}` }, stage);
+    const defs = svg('defs', {}, s), clip = svg('clipPath', { id: 'rc' + Math.random().toString(36).slice(2) }, defs), cr = svg('rect', {}, clip);
+    const g = svg('g', { transform: `translate(${P},${P})` }, s);
+    const board = (parent, a, b) => { for (let i = 0; i < W * 2; i++) for (let j = 0; j < H * 2; j++) svg('rect', { x: i * U / 2, y: j * U / 2, width: U / 2, height: U / 2, fill: (i + j) % 2 ? b : a }, parent); };
+    board(svg('g', {}, g), mix(PAL[5], .72), '#fff');
+    board(svg('g', { 'clip-path': `url(#${clip.id})` }, g), PAL[5], mix(PAL[4], .25));
+    for (let i = 0; i <= W; i++) { svg('line', { x1: i * U, y1: 0, x2: i * U, y2: H * U, stroke: INK, 'stroke-width': 1.6 }, g); svg('text', { x: i * U, y: -8, 'text-anchor': 'middle', 'font-size': 15, 'font-family': 'sans-serif', fill: INK }, g).textContent = i; }
+    for (let j = 0; j <= H; j++) { svg('line', { x1: 0, y1: j * U, x2: W * U, y2: j * U, stroke: INK, 'stroke-width': 1.6 }, g); svg('text', { x: -10, y: j * U + 5, 'text-anchor': 'end', 'font-size': 15, 'font-family': 'sans-serif', fill: INK }, g).textContent = j; }
+    const box = svg('rect', { fill: 'none', stroke: INK, 'stroke-width': 4 }, g);
+    let st = { x: 0, y: 0, w: 2.3, h: 1.6 }; const sl = {};
+    const F = (a, b) => { const f = t => { const k = Math.floor(t), fr = t - k; return fr < .5 ? fr : 1 - fr; }; return f(b) - f(a); }; // signed (dark minus light) length of [a,b]
+    function draw() {
+      st.x = Math.min(st.x, W - st.w); st.y = Math.min(st.y, H - st.h); sl.x.set(st.x); sl.y.set(st.y);
+      for (const [k, v] of [['x', st.x * U], ['y', st.y * U], ['width', st.w * U], ['height', st.h * U]]) { cr.setAttribute(k, v); box.setAttribute(k, v); }
+      const A = st.w * st.h, D = F(st.x, st.x + st.w) * F(st.y, st.y + st.h), dark = (A + D) / 2, light = (A - D) / 2, bal = Math.abs(D) < 1e-9;
+      const whole = v => Math.abs(v - Math.round(v)) < 1e-9;
+      out.innerHTML = `<div class="chips">${C.chip(PAL[5], 'violet area ' + dark.toFixed(3))}${C.chip(mix(PAL[4], .25), 'yellow area ' + light.toFixed(3))}</div>` +
+        `<div class="verdict ${bal ? 'yes' : 'no'}">${bal ? 'Perfectly balanced.' : 'Unbalanced by ' + Math.abs(D).toFixed(3) + '.'} ${whole(st.w) || whole(st.h) ? 'A side is a whole number (' + (whole(st.w) ? 'width ' + st.w : 'height ' + st.h) + ').' : 'Neither side is a whole number.'}</div>`;
+    }
+    const f2 = v => v.toFixed(2);
+    sl.w = C.slider('Width', .25, 3, .05, st.w, v => { st.w = v; draw(); }, controls, f2);
+    sl.h = C.slider('Height', .25, 3, .05, st.h, v => { st.h = v; draw(); }, controls, f2);
+    sl.x = C.slider('Slide right', 0, 2, .05, st.x, v => { st.x = Math.min(v, W - st.w); draw(); }, controls, f2);
+    sl.y = C.slider('Slide down', 0, 2, .05, st.y, v => { st.y = Math.min(v, H - st.h); draw(); }, controls, f2);
+    const row = el('div', { class: 'controls' }, controls);
+    C.button('Make the width a whole number', () => { st.w = 2; sl.w.set(2); draw(); }, row);
+    C.button('Pin the corner to (0, 0)', () => { st.x = 0; st.y = 0; draw(); }, row);
+    draw();
+  };
+})();
+</script>
+<script>/* Figures where colouring proves that something must exist: guards, triangles, rainbow rooms. Plus necklaces. */
+(function () {
+  const C = window.Colouring, { PAL, INK, svg, el, mix } = C;
+
+  /* ---------- Art gallery: triangulate, 3-colour, post guards ---------- */
+  C.triangulate = function (P) {             // ear clipping, then colour the ears back in reverse order
+    const n = P.length, cross = (a, b, c) => (b[0] - a[0]) * (c[1] - a[1]) - (b[1] - a[1]) * (c[0] - a[0]);
+    let idx = [...Array(n).keys()], area = 0;
+    for (let i = 0; i < n; i++) { const a = P[i], b = P[(i + 1) % n]; area += a[0] * b[1] - b[0] * a[1]; }
+    if (area < 0) idx.reverse();
+    const inTri = (p, a, b, c) => cross(a, b, p) >= -1e-9 && cross(b, c, p) >= -1e-9 && cross(c, a, p) >= -1e-9, tris = [];
+    while (idx.length > 3) {
+      let found = false;
+      for (let i = 0; i < idx.length && !found; i++) {
+        const a = idx[(i + idx.length - 1) % idx.length], b = idx[i], c = idx[(i + 1) % idx.length];
+        if (cross(P[a], P[b], P[c]) <= 1e-9) continue;
+        if (idx.some(j => j !== a && j !== b && j !== c && inTri(P[j], P[a], P[b], P[c]))) continue;
+        tris.push([a, b, c]); idx.splice(i, 1); found = true;
+      }
+      if (!found) break;
+    }
+    tris.push(idx.slice());
+    const col = Array(n).fill(-1); tris[tris.length - 1].forEach((v, i) => col[v] = i);
+    for (let t = tris.length - 2; t >= 0; t--) { const [a, b, c] = tris[t]; col[b] = 3 - col[a] - col[c]; }
+    return { tris, col };
+  };
+  C.GALLERIES = {
+    museum: { label: 'A museum', pts: [[60, 60], [240, 60], [240, 140], [330, 140], [330, 50], [540, 50], [540, 200], [450, 200], [450, 330], [300, 330], [300, 240], [200, 240], [200, 330], [60, 330], [60, 220], [130, 220], [130, 150], [60, 150]] },
+    zigzag: { label: 'A zigzag hall', pts: [[40, 320], [110, 90], [200, 250], [270, 60], [350, 240], [430, 70], [500, 230], [560, 110], [570, 340], [300, 300]] },
+    comb: { label: 'The comb', pts: [[40, 320], [540, 320], [485, 60], [445, 260], [395, 260], [355, 60], [315, 260], [265, 260], [225, 60], [185, 260], [135, 260], [95, 60]] }
+  };
+  C.gallery = function (host) {
+    const { stage, controls, out } = C.frame(host), s = svg('svg', { viewBox: '0 0 600 380' }, stage);
+    let key = 'museum', step = 0, pick = -1;
+    function draw() {
+      s.innerHTML = ''; const P = C.GALLERIES[key].pts, n = P.length, { tris, col } = C.triangulate(P);
+      const cnt = [0, 0, 0]; col.forEach(c => cnt[c]++);
+      svg('polygon', { points: P.map(p => p.join(',')).join(' '), fill: '#F3F6FD', stroke: 'none' }, s);
+      if (step >= 3 && pick >= 0) tris.forEach(t => svg('polygon', { points: t.map(i => P[i].join(',')).join(' '), fill: mix(PAL[pick], .62), stroke: 'none' }, s));
+      if (step >= 1) tris.forEach(t => svg('polygon', { points: t.map(i => P[i].join(',')).join(' '), fill: 'none', stroke: INK, 'stroke-width': 1.2, 'stroke-dasharray': '5 4' }, s));
+      svg('polygon', { points: P.map(p => p.join(',')).join(' '), fill: 'none', stroke: INK, 'stroke-width': 4, 'stroke-linejoin': 'round' }, s);
+      P.forEach((p, i) => {
+        const guard = step >= 3 && col[i] === pick;
+        if (guard) svg('circle', { cx: p[0], cy: p[1], r: 17, fill: 'none', stroke: INK, 'stroke-width': 2.5 }, s);
+        svg('circle', { cx: p[0], cy: p[1], r: step >= 2 ? 9 : 5, fill: step >= 2 ? PAL[col[i]] : INK, stroke: INK, 'stroke-width': 2 }, s);
+      });
+      const txt = [
+        `A floor plan with <b>${n} corners</b>. Guards stand at corners and see in every direction, but not through walls.`,
+        `Cut the floor into triangles by joining corners. Any such floor plan can be cut this way, into exactly ${n - 2} triangles.`,
+        `Colour the corners with three colours so that <b>every triangle gets one of each</b>. Check any triangle you like.`,
+        pick < 0 ? 'Now choose one colour and post a guard on every corner of that colour.' : `<b>${cnt[pick]} guards</b> on the ${C.NAMES[pick]} corners. Each triangle has a ${C.NAMES[pick]} corner, and a guard at a triangle's corner sees the whole triangle. So every triangle, and the whole floor, is watched.`
+      ][step];
+      let h = `<p class="note">${txt}</p>`;
+      if (step >= 2) h += '<div class="chips">' + cnt.map((c, i) => C.chip(PAL[i], c + ' corners')).join('') + '</div>';
+      if (step >= 3) h += `<div class="verdict yes">The rarest colour has ${Math.min(...cnt)} corners. Three colours share ${n} corners, so the rarest never has more than ${n} ÷ 3 = ${Math.floor(n / 3)}${n % 3 ? ' (rounded down)' : ''}.</div>`;
+      out.innerHTML = h;
+      if (step >= 3) { const row = el('div', { class: 'controls' }, out); cnt.forEach((c, i) => C.button(`Guards on ${C.NAMES[i]}`, () => { pick = i; draw(); }, row)); }
+    }
+    C.seg(Object.keys(C.GALLERIES).map(k => ({ id: k, label: C.GALLERIES[k].label })), key, k => { key = k; pick = -1; draw(); }, controls);
+    const steps = C.seg([{ id: 0, label: '1 Floor plan' }, { id: 1, label: '2 Triangles' }, { id: 2, label: '3 Colours' }, { id: 3, label: '4 Guards' }], 0, v => { step = +v; if (step === 3 && pick < 0) { const { col } = C.triangulate(C.GALLERIES[key].pts), cnt = [0, 0, 0]; col.forEach(c => cnt[c]++); pick = cnt.indexOf(Math.min(...cnt)); } draw(); }, controls);
+    draw();
+  };
+
+  /* ---------- Party of six ---------- */
+  const NAMES = ['Asha', 'Bilal', 'Chen', 'Divya', 'Eshan', 'Farah'], RED = PAL[3], BLUE = PAL[0];
+  C.countClean = function (n) {             // how many red/blue colourings of the links among n people have no one-colour triangle
+    const E = []; for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) E.push([i, j]);
+    const id = (i, j) => E.findIndex(e => e[0] === i && e[1] === j), T = [];
+    for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) for (let k = j + 1; k < n; k++) T.push((1 << id(i, j)) | (1 << id(i, k)) | (1 << id(j, k)));
+    let clean = 0; const total = 1 << E.length;
+    for (let m = 0; m < total; m++) if (T.every(t => (m & t) !== 0 && (m & t) !== t)) clean++;
+    return { clean, total };
+  };
+  C.party = function (host) {
+    const { stage, controls, out } = C.frame(host), s = svg('svg', { viewBox: '0 0 440 440' }, stage);
+    let n = 6, col = {}, checked = '';
+    const pos = i => { const a = -Math.PI / 2 + i * 2 * Math.PI / n; return [220 + 165 * Math.cos(a), 220 + 165 * Math.sin(a)]; };
+    const key = (i, j) => i < j ? i + '-' + j : j + '-' + i;
+    function draw() {
+      s.innerHTML = ''; const tri = [];
+      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) for (let k = j + 1; k < n; k++) { const a = col[key(i, j)]; if (a && a === col[key(i, k)] && a === col[key(j, k)]) tri.push([i, j, k, a]); }
+      tri.forEach(t => svg('polygon', { points: t.slice(0, 3).map(i => pos(i).join(',')).join(' '), fill: t[3] === 'r' ? RED : BLUE, opacity: .22 }, s));
+      let done = 0, total = 0;
+      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) {
+        total++; const c = col[key(i, j)], [x1, y1] = pos(i), [x2, y2] = pos(j), hot = tri.some(t => t.includes(i) && t.includes(j) && t[3] === c); if (c) done++;
+        svg('line', { x1, y1, x2, y2, stroke: c === 'r' ? RED : c === 'b' ? BLUE : '#C5CEE4', 'stroke-width': hot ? 9 : c ? 5 : 2.5, 'stroke-dasharray': c ? '' : '6 6', 'stroke-linecap': 'round' }, s);
+        const hit = svg('line', { x1, y1, x2, y2, stroke: 'transparent', 'stroke-width': 22, style: 'cursor:pointer', tabindex: 0, role: 'button', 'aria-label': `Link between ${NAMES[i]} and ${NAMES[j]}` }, s);
+        const go = () => { const k = key(i, j); col[k] = !col[k] ? 'r' : col[k] === 'r' ? 'b' : undefined; checked = ''; draw(); };
+        hit.addEventListener('click', go); hit.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+      }
+      for (let i = 0; i < n; i++) { const [x, y] = pos(i); svg('circle', { cx: x, cy: y, r: 21, fill: '#fff', stroke: INK, 'stroke-width': 3, 'pointer-events': 'none' }, s); svg('text', { x, y: y + 6, 'text-anchor': 'middle', 'font-size': 17, 'font-weight': 700, 'font-family': 'sans-serif', fill: INK, 'pointer-events': 'none' }, s).textContent = NAMES[i][0]; }
+      let h = `<div class="chips">${C.chip(RED, 'pink: friends')}${C.chip(BLUE, 'blue: strangers')}</div><div>Links coloured: <span class="big">${done}</span> of ${total}</div>`;
+      if (tri.length) { const t = tri[0]; h += `<div class="verdict no">${t.slice(0, 3).map(i => NAMES[i]).join(', ')} are all ${t[3] === 'r' ? 'friends' : 'strangers'}: a one-colour triangle.</div>`; }
+      else if (done === total) h += `<div class="verdict yes">Every link is coloured and there is no one-colour triangle. With ${n} people it can be done.</div>`;
+      else h += `<div class="verdict hmm">No one-colour triangle so far. Click a link to colour it (click again to change it).</div>`;
+      out.innerHTML = h + (checked ? `<p class="note">${checked}</p>` : '');
+    }
+    C.seg([{ id: 6, label: '6 people' }, { id: 5, label: '5 people' }], 6, v => { n = +v; col = {}; checked = ''; draw(); }, controls);
+    C.button('Colour at random', () => { for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) col[key(i, j)] = Math.random() < .5 ? 'r' : 'b'; checked = ''; draw(); }, controls);
+    C.button('Show the escape for 5', () => { n = 5; seg5(); col = {}; for (let i = 0; i < 5; i++) { col[key(i, (i + 1) % 5)] = 'r'; col[key(i, (i + 2) % 5)] = 'b'; } checked = ''; draw(); }, controls);
+    C.button('Clear', () => { col = {}; checked = ''; draw(); }, controls);
+    C.button('Check every possible colouring', () => { const r = C.countClean(n); checked = `Checked all <b>${r.total.toLocaleString('en-IN')}</b> ways to colour the links among ${n} people. Colourings with no one-colour triangle: <b>${r.clean}</b>.`; draw(); }, controls, 'primary');
+    const seg5 = () => { const b = controls.querySelectorAll('.seg button'); b[0].setAttribute('aria-pressed', 'false'); b[1].setAttribute('aria-pressed', 'true'); };
+    draw();
+  };
+
+  /* ---------- Erdős: colour by coin flips ---------- */
+  const choose = (n, k) => { let r = 1; for (let i = 1; i <= k; i++) r = r * (n - k + i) / i; return Math.round(r); };
+  C.erdos = function (host) {
+    const { stage, controls, out } = C.frame(host), s = svg('svg', { viewBox: '0 0 440 440' }, stage);
+    let n = 6, k = 4, adj = null, stats = null;
+    const subsets = (n, k) => { const res = [], cur = []; (function rec(a) { if (cur.length === k) { res.push(cur.slice()); return; } for (let i = a; i < n; i++) { cur.push(i); rec(i + 1); cur.pop(); } })(0); return res; };
+    const flip = () => { const a = Array.from({ length: n }, () => Array(n).fill(0)); for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) a[i][j] = a[j][i] = Math.random() < .5 ? 1 : 2; return a; };
+    const mono = (a, subs) => subs.filter(S => { const c = a[S[0]][S[1]]; for (let x = 0; x < S.length; x++) for (let y = x + 1; y < S.length; y++) if (a[S[x]][S[y]] !== c) return false; return true; });
+    const pos = i => { const t = -Math.PI / 2 + i * 2 * Math.PI / n; return [220 + 185 * Math.cos(t), 220 + 185 * Math.sin(t)]; };
+    function draw() {
+      s.innerHTML = ''; const subs = subsets(n, k), bad = adj ? mono(adj, subs) : [], exp = choose(n, k) * Math.pow(2, 1 - k * (k - 1) / 2);
+      if (bad.length) { const B = bad[0]; svg('polygon', { points: B.map(i => pos(i).join(',')).join(' '), fill: INK, opacity: .12 }, s); }
+      for (let i = 0; i < n; i++) for (let j = i + 1; j < n; j++) { const [x1, y1] = pos(i), [x2, y2] = pos(j), c = adj && adj[i][j], hot = bad.length && bad[0].includes(i) && bad[0].includes(j); svg('line', { x1, y1, x2, y2, stroke: c === 1 ? RED : c === 2 ? BLUE : '#C5CEE4', 'stroke-width': hot ? 6 : 2, opacity: hot || !bad.length ? 1 : .55 }, s); }
+      for (let i = 0; i < n; i++) { const [x, y] = pos(i); svg('circle', { cx: x, cy: y, r: 9, fill: '#fff', stroke: INK, 'stroke-width': 2.5 }, s); }
+      let h = `<div>Average number of one-colour groups of ${k}, in theory: <span class="big">${exp < .01 ? exp.toExponential(1) : exp.toFixed(2)}</span></div>`;
+      h += `<div class="verdict ${exp < 1 ? 'yes' : 'hmm'}">${exp < 1 ? 'The average is below 1. Some colouring must score 0: a clean colouring exists.' : 'The average is 1 or more, so this argument proves nothing here. (A clean colouring might still exist.)'}</div>`;
+      if (adj) h += `<p class="note">This colouring has <b>${bad.length}</b> one-colour group${bad.length === 1 ? '' : 's'} of ${k}${bad.length ? ' (one is highlighted)' : ': a clean one'}.</p>`;
+      if (stats) h += `<p class="note">In 2,000 random colourings: average <b>${stats.avg.toFixed(2)}</b> one-colour groups; <b>${(stats.zero / 20).toFixed(1)}%</b> of the colourings were clean.</p>`;
+      out.innerHTML = h;
+    }
+    C.slider('People', 4, 12, 1, n, v => { n = v; adj = null; stats = null; draw(); }, controls);
+    C.seg([{ id: 3, label: 'Groups of 3' }, { id: 4, label: 'Groups of 4' }], 4, v => { k = +v; stats = null; draw(); }, controls);
+    C.button('Flip a coin for every link', () => { adj = flip(); draw(); }, controls, 'primary');
+    C.button('Do it 2,000 times', () => { const subs = subsets(n, k); let sum = 0, zero = 0; for (let t = 0; t < 2000; t++) { const m = mono(flip(), subs).length; sum += m; if (!m) zero++; } stats = { avg: sum / 2000, zero }; draw(); }, controls);
+    draw();
+  };
+
+  /* ---------- Sperner's lemma ---------- */
+  C.sperner = function (host) {
+    const N = 6, L = 78, X0 = 36, Y0 = 440, HH = L * Math.sqrt(3) / 2, { stage, controls, out } = C.frame(host);
+    const s = svg('svg', { viewBox: `0 0 ${N * L + 72} 470` }, stage);
+    const V = [], id = {}; for (let j = 0; j <= N; j++) for (let i = 0; i + j <= N; i++) { id[i + ',' + j] = V.length; V.push({ i, j, x: X0 + (i + j / 2) * L, y: Y0 - j * HH, c: 0 }); }
+    const allowed = v => v.i === 0 && v.j === 0 ? [0] : v.i === N && v.j === 0 ? [1] : v.j === N ? [2] : v.j === 0 ? [0, 1] : v.i === 0 ? [0, 2] : v.i + v.j === N ? [1, 2] : [0, 1, 2];
+    const T = []; for (let j = 0; j < N; j++) for (let i = 0; i + j < N; i++) { T.push([id[i + ',' + j], id[(i + 1) + ',' + j], id[i + ',' + (j + 1)]]); if (i + j < N - 1) T.push([id[(i + 1) + ',' + j], id[(i + 1) + ',' + (j + 1)], id[i + ',' + (j + 1)]]); }
+    const ek = (a, b) => a < b ? a + '_' + b : b + '_' + a, edgeT = {};
+    T.forEach((t, ti) => [[0, 1], [1, 2], [0, 2]].forEach(([a, b]) => (edgeT[ek(t[a], t[b])] = edgeT[ek(t[a], t[b])] || []).push(ti)));
+    let walk = false;
+    const shuffle = () => V.forEach(v => { const a = allowed(v); v.c = a[Math.floor(Math.random() * a.length)]; });
+    const rainbow = t => new Set(t.map(v => V[v].c)).size === 3;
+    const door = (a, b) => V[a].c + V[b].c === 1;                       // a "door" is an edge coloured blue-orange
+    const cen = t => [(V[t[0]].x + V[t[1]].x + V[t[2]].x) / 3, (V[t[0]].y + V[t[1]].y + V[t[2]].y) / 3];
+    function walks() {                                                  // enter through every door on the bottom side
+      const res = [];
+      for (let i = 0; i < N; i++) {
+        const a = id[i + ',0'], b = id[(i + 1) + ',0']; if (!door(a, b)) continue;
+        let e = ek(a, b), ti = edgeT[e][0]; const pts = [[(V[a].x + V[b].x) / 2, Y0 + 20]]; let ok = false;
+        for (let guard = 0; guard < 200; guard++) {
+          const t = T[ti]; pts.push(cen(t)); if (rainbow(t)) { ok = true; break; }
+          const nxt = [[0, 1], [1, 2], [0, 2]].map(([x, y]) => [t[x], t[y]]).find(([x, y]) => door(x, y) && ek(x, y) !== e);
+          e = ek(nxt[0], nxt[1]); const other = edgeT[e].find(q => q !== ti);
+          if (other === undefined) { pts.push([(V[nxt[0]].x + V[nxt[1]].x) / 2, Y0 + 20]); break; }
+          ti = other;
+        }
+        res.push({ pts, ok });
+      } return res;
+    }
+    function draw() {
+      s.innerHTML = ''; let count = 0;
+      T.forEach(t => { const r = rainbow(t); if (r) count++; svg('polygon', { points: t.map(v => V[v].x + ',' + V[v].y).join(' '), fill: r ? PAL[4] : '#fff', stroke: INK, 'stroke-width': 1.3 }, s); });
+      if (walk) walks().forEach(w => svg('polyline', { points: w.pts.map(p => p.join(',')).join(' '), fill: 'none', stroke: w.ok ? INK : PAL[3], 'stroke-width': 4, 'stroke-dasharray': w.ok ? '' : '3 7', 'stroke-linecap': 'round', 'stroke-linejoin': 'round', 'pointer-events': 'none' }, s));
+      V.forEach(v => { const lock = allowed(v).length === 1, c = svg('circle', { cx: v.x, cy: v.y, r: lock ? 15 : 12, fill: PAL[v.c], stroke: INK, 'stroke-width': lock ? 4 : 2, style: lock ? '' : 'cursor:pointer' }, s);
+        if (!lock) { c.setAttribute('tabindex', 0); const go = () => { const a = allowed(v); v.c = a[(a.indexOf(v.c) + 1) % a.length]; draw(); }; c.addEventListener('click', go); c.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } }); } });
+      out.innerHTML = `<div>Triangles with all three colours: <span class="big">${count}</span></div><div class="verdict yes">${count} is odd, so it can never be zero.</div>` +
+        `<p class="note">Rules: the three big corners are fixed. A dot on a side may only use the two colours at the ends of that side. Dots inside may use any colour. Click a dot to change it.</p>` +
+        (walk ? `<p class="note">Each walk enters through a blue-orange edge on the bottom side and keeps crossing blue-orange edges. Solid walks end in a three-colour room. Dotted walks come back out, using up two entrances.</p>` : '');
+    }
+    C.button('Shuffle the colours', () => { shuffle(); draw(); }, controls, 'primary');
+    C.button('Show the walks', () => { walk = !walk; draw(); }, controls);
+    shuffle(); draw();
+  };
+
+  /* ---------- Necklaces and Fermat's little theorem ---------- */
+  C.necklaces = function (host) {
+    const { stage, controls, out } = C.frame(host, true); let n = 5, a = 2, sel = -1;
+    const bead = (str, size) => { const r = size / 2 - 6, s = `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}"><circle cx="${size / 2}" cy="${size / 2}" r="${r}" fill="none" stroke="${INK}" stroke-width="1.2"/>` + [...str].map((ch, i) => { const t = -Math.PI / 2 + i * 2 * Math.PI / str.length; return `<circle cx="${size / 2 + r * Math.cos(t)}" cy="${size / 2 + r * Math.sin(t)}" r="${Math.min(5.5, 2.4 * r / str.length + 1.5)}" fill="${PAL[[0, 1, 2][+ch]]}" stroke="${INK}" stroke-width="1"/>`; }).join('') + '</svg>'; return s; };
+    function draw() {
+      const groups = new Map();
+      for (let m = 0; m < Math.pow(a, n); m++) { const str = m.toString(a).padStart(n, '0'); let best = str; for (let i = 1; i < n; i++) { const r = str.slice(i) + str.slice(0, i); if (r < best) best = r; } if (!groups.has(best)) groups.set(best, new Set()); groups.get(best).add(str); }
+      const G = [...groups.values()].map(x => [...x]).sort((x, y) => x.length - y.length || (x[0] < y[0] ? -1 : 1));
+      stage.innerHTML = ''; const box = el('div', { class: 'neck' }, stage);
+      G.forEach((g, i) => { const b = el('button', { type: 'button', 'aria-pressed': String(i === sel), 'aria-label': `Necklace group of ${g.length}` }, box, bead(g[0], 46) + `<span>×${g.length}</span>`); b.addEventListener('click', () => { sel = i; draw(); }); });
+      const rot = el('div', { class: 'rot' }, stage); if (sel >= 0 && G[sel]) rot.innerHTML = G[sel].map(x => bead(x, 46)).join(''); else rot.innerHTML = '<span class="note" style="font-family:var(--display);font-size:.93rem">Click a necklace to see every string that is a rotation of it.</span>';
+      const total = Math.pow(a, n), sizes = {}; G.forEach(g => sizes[g.length] = (sizes[g.length] || 0) + 1);
+      const full = (total - a) % n === 0, parts = Object.keys(sizes).map(k => `${sizes[k]} group${sizes[k] > 1 ? 's' : ''} of ${k}`).join(' + ');
+      out.innerHTML = `<p class="note">${a}<sup>${n}</sup> = <b>${total}</b> coloured strings fall into ${parts}.</p><div class="verdict ${full ? 'yes' : 'no'}">${total} − ${a} = ${total - a}, which ${full ? 'is' : 'is <b>not</b>'} divisible by ${n}.${[2, 3, 5, 7].includes(n) ? '' : ` (${n} is not prime: some necklaces repeat before a full turn, so their groups are smaller.)`}</div>`;
+    }
+    C.seg([3, 4, 5, 6, 7].map(v => ({ id: v, label: v + ' beads' })), n, v => { n = +v; if (a === 3 && n > 5) { a = 2; segA.set(2); } sel = -1; draw(); }, controls);
+    const segA = C.seg([{ id: 2, label: '2 colours' }, { id: 3, label: '3 colours' }], a, v => { a = +v; if (a === 3 && n > 5) { a = 2; segA.set(2); } sel = -1; draw(); }, controls);
+    draw();
+  };
+})();
+</script>
+<script>/* Graph-colouring figures: timetable, Moser spindle, and the 7-coloured plane. */
+(function () {
+  const C = window.Colouring, { PAL, INK, svg, el, mix } = C;
+
+  C.chromatic = function (n, edges, max) {   // smallest number of colours, by brute force (tiny graphs only)
+    for (let k = 1; k <= max; k++) { const col = Array(n).fill(0);
+      const rec = v => { if (v === n) return true; for (let c = 0; c < k; c++) { if (edges.every(([a, b]) => !((a === v && b < v && col[b] === c) || (b === v && a < v && col[a] === c)))) { col[v] = c; if (rec(v + 1)) return true; } } return false; };
+      if (rec(0)) return k; } return max + 1;
+  };
+  C.graphColour = function (host, o) {
+    const { stage, controls, out } = C.frame(host), s = svg('svg', { viewBox: o.viewBox }, stage);
+    let K = o.k, col = o.nodes.map(() => -1); const chi = C.chromatic(o.nodes.length, o.edges, 7);
+    function draw() {
+      s.innerHTML = ''; let clash = 0;
+      o.edges.forEach(([a, b]) => { const bad = col[a] >= 0 && col[a] === col[b]; if (bad) clash++; svg('line', { x1: o.nodes[a].x, y1: o.nodes[a].y, x2: o.nodes[b].x, y2: o.nodes[b].y, stroke: bad ? PAL[3] : INK, 'stroke-width': bad ? 8 : 2.5, 'stroke-dasharray': bad ? '2 9' : '', 'stroke-linecap': 'round' }, s); });
+      o.nodes.forEach((nd, i) => {
+        const g = svg('g', { style: 'cursor:pointer', tabindex: 0, role: 'button', 'aria-label': (nd.label || 'Point ' + (i + 1)) + (col[i] >= 0 ? ', colour ' + (col[i] + 1) : ', no colour') }, s);
+        if (nd.label) { const w = nd.label.length * 8.6 + 26; svg('rect', { x: nd.x - w / 2, y: nd.y - 17, width: w, height: 34, rx: 17, fill: col[i] >= 0 ? mix(PAL[col[i]], .35) : '#fff', stroke: INK, 'stroke-width': 2.5 }, g); svg('text', { x: nd.x, y: nd.y + 5, 'text-anchor': 'middle', 'font-size': 14.5, 'font-weight': 700, 'font-family': 'sans-serif', fill: INK }, g).textContent = nd.label; }
+        else svg('circle', { cx: nd.x, cy: nd.y, r: 15, fill: col[i] >= 0 ? PAL[col[i]] : '#fff', stroke: INK, 'stroke-width': 3 }, g);
+        const go = () => { col[i] = col[i] + 1 >= K ? -1 : col[i] + 1; draw(); };
+        g.addEventListener('click', go); g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+      });
+      const used = new Set(col.filter(c => c >= 0)).size, left = col.filter(c => c < 0).length;
+      let h = '';
+      if (o.slots) h += '<div class="chips">' + o.slots.slice(0, K).map((t, i) => C.chip(mix(PAL[i], .35), t)).join('') + '</div>';
+      h += `<div>${o.unit} used: <span class="big">${used}</span> &nbsp; Clashes: <span class="big">${clash}</span></div>`;
+      if (clash) h += `<div class="verdict no">${clash} clash${clash > 1 ? 'es' : ''}: the dotted pink links join two ${o.things} with the same colour.</div>`;
+      else if (left) h += `<div class="verdict hmm">${left} still uncoloured. Click to cycle through the colours.</div>`;
+      else h += `<div class="verdict yes">Done, with ${used} ${o.unit.toLowerCase()}. ${used === chi ? 'That is the fewest possible.' : `It can be done with ${chi}.`}</div>`;
+      if (K < chi) h += `<p class="note">With only ${K} colours this is impossible: every one of the ${Math.pow(K, o.nodes.length).toLocaleString('en-IN')} ways to colour it has a clash.</p>`;
+      out.innerHTML = h;
+    }
+    if (o.kChoices) C.seg(o.kChoices.map(k => ({ id: k, label: k + ' colours' })), K, v => { K = +v; col = col.map(c => c >= K ? -1 : c); draw(); }, controls);
+    C.button('Clear', () => { col = col.map(() => -1); draw(); }, controls);
+    draw();
+  };
+  C.TIMETABLE = {
+    viewBox: '0 0 520 400', k: 5, unit: 'Slots', things: 'exams', slots: ['Mon morning', 'Mon afternoon', 'Tue morning', 'Tue afternoon', 'Wed morning'],
+    nodes: [['Calculus', 250, 190], ['Algebra', 250, 40], ['Physics', 440, 130], ['Programming', 400, 300], ['Probability', 110, 300], ['Chemistry', 70, 130], ['Economics', 255, 365], ['Design', 70, 30]].map(([label, x, y]) => ({ label, x, y })),
+    edges: [[0, 1], [0, 2], [0, 3], [0, 4], [0, 5], [1, 2], [2, 3], [3, 4], [4, 5], [5, 1], [6, 3], [6, 4], [7, 5], [7, 1]]
+  };
+  C.moser = function () {                    // Moser spindle: seven points, eleven links of length exactly 1
+    const U = 150, rot = (p, t) => [p[0] * Math.cos(t) - p[1] * Math.sin(t), p[0] * Math.sin(t) + p[1] * Math.cos(t)], phi = 2 * Math.asin(1 / (2 * Math.sqrt(3)));
+    const t0 = Math.PI / 2 - Math.PI / 6 - phi / 2, B = rot([1, 0], t0), Cc = rot([1, 0], t0 + Math.PI / 3), D = [B[0] + Cc[0], B[1] + Cc[1]];
+    const pts = [[0, 0], B, Cc, D, rot(B, phi), rot(Cc, phi), rot(D, phi)];
+    return { viewBox: '0 0 420 330', k: 3, kChoices: [3, 4], unit: 'Colours', things: 'points', nodes: pts.map(p => ({ x: 210 + p[0] * U, y: 300 - p[1] * U })), edges: [[0, 1], [0, 2], [1, 2], [1, 3], [2, 3], [0, 4], [0, 5], [4, 5], [4, 6], [5, 6], [3, 6]], pts };
+  };
+
+  /* ---------- The plane in seven colours ---------- */
+  C.HEXR = 0.45;                             // hexagon "radius": every hexagon is 0.9 across, a little less than 1
+  C.hexAt = (x, y) => { const R = C.HEXR; let q = (Math.sqrt(3) / 3 * x - y / 3) / R, r = (2 / 3 * y) / R, z = -q - r; let rq = Math.round(q), rr = Math.round(r), rz = Math.round(z); const dq = Math.abs(rq - q), dr = Math.abs(rr - r), dz = Math.abs(rz - z); if (dq > dr && dq > dz) rq = -rr - rz; else if (dr > dz) rr = -rq - rz; return [rq, rr]; };
+  C.hexColour = (q, r) => (((q - 2 * r) % 7) + 7) % 7;
+  C.plane = function (host) {
+    const SC = 92, W = 720, H = 430, R = C.HEXR, { stage, controls, out } = C.frame(host, true);
+    const s = svg('svg', { viewBox: `0 0 ${W} ${H}`, style: 'cursor:crosshair;touch-action:none' }, stage), hexes = [];
+    for (let r = -2; r < 9; r++) for (let q = -6; q < 12; q++) {
+      const cx = R * Math.sqrt(3) * (q + r / 2) * SC, cy = R * 1.5 * r * SC; if (cx < -60 || cx > W + 60 || cy < -60 || cy > H + 60) continue;
+      const pts = [...Array(6)].map((_, i) => { const a = Math.PI / 6 + i * Math.PI / 3; return (cx + R * SC * Math.cos(a)) + ',' + (cy + R * SC * Math.sin(a)); }).join(' ');
+      hexes.push({ c: C.hexColour(q, r), e: svg('polygon', { points: pts, stroke: INK, 'stroke-width': 1 }, s) });
+    }
+    const ring = svg('circle', { r: SC, fill: 'none', stroke: INK, 'stroke-width': 3.5, 'pointer-events': 'none' }, s), dot = svg('circle', { r: 7, fill: '#fff', stroke: INK, 'stroke-width': 3, 'pointer-events': 'none' }, s);
+    const stick = svg('line', { stroke: INK, 'stroke-width': 2, 'stroke-dasharray': '5 4', 'pointer-events': 'none' }, s);
+    function place(px, py) {
+      const [q, r] = C.hexAt(px / SC, py / SC), c = C.hexColour(q, r);
+      hexes.forEach(h => h.e.setAttribute('fill', h.c === c ? PAL[h.c] : mix(PAL[h.c], .72)));
+      ring.setAttribute('cx', px); ring.setAttribute('cy', py); dot.setAttribute('cx', px); dot.setAttribute('cy', py);
+      stick.setAttribute('x1', px); stick.setAttribute('y1', py); stick.setAttribute('x2', px + SC); stick.setAttribute('y2', py);
+      out.innerHTML = `<p class="note">Your point is <b>${C.NAMES[c]}</b>, and every ${C.NAMES[c]} hexagon is shown at full strength. The ring marks every point exactly 1 unit away. It never touches ${C.NAMES[c]}: within one hexagon nothing is as far as 1 apart, and the next hexagon of the same colour is more than 1 away.</p>`;
+    }
+    const move = ev => { const b = s.getBoundingClientRect(); place((ev.clientX - b.left) * W / b.width, (ev.clientY - b.top) * H / b.height); };
+    s.addEventListener('pointermove', move); s.addEventListener('pointerdown', move);
+    controls.remove(); place(330, 215);
+  };
+})();
+</script>
+<script>/* Starts every figure on the page. */
+(function () {
+  const C = window.Colouring, P = C.PAL;
+  // header band: a strip of squared paper coloured along its diagonals
+  C.mount('band', h => { for (let r = 0; r < 4; r++) for (let c = 0; c < 16; c++) { const i = document.createElement('i'); i.style.background = P[(r + c) % 4]; i.style.animationDelay = (r + c) * 45 + 'ms'; h.appendChild(i); } });
+  const two = [P[5], P[4]];
+  const pinwheel = () => { const s = []; for (let c = 0; c < 6; c++) s.push({ r: 0, c, dir: 'v' }); for (let r = 0; r < 6; r++) s.push({ r, c: 6, dir: 'h' }); for (let c = 4; c < 10; c++) s.push({ r: 6, c, dir: 'v' }); for (let r = 4; r < 10; r++) s.push({ r, c: 0, dir: 'h' }); return s; };
+  C.mount('w-strips', h => C.stripBoard(h, {
+    rows: 10, cols: 10, k: 4, best: pinwheel, bestLabel: 'Show 24 strips',
+    plainNote: 'Click a square to lay a strip of four. Click a strip to lift it. Can you fit 25?',
+    modes: [
+      { id: 'none', label: 'No colours' },
+      { id: 'check', label: 'Chessboard', n: 2, pal: two, fn: (r, c) => (r + c) % 2, verdict: t => ['hmm', `${t[0]} and ${t[1]}. Every strip covers 2 + 2, and 25 strips would need 50 + 50. No contradiction: this colouring tells us nothing.`] },
+      { id: 'block', label: '2 × 2 blocks', n: 2, pal: two, fn: (r, c) => ((r >> 1) + (c >> 1)) % 2, verdict: t => ['no', `Every strip still covers 2 + 2, so 25 strips would need 50 + 50. The board has ${t[0]} and ${t[1]}. Impossible.`] },
+      { id: 'diag', label: 'Diagonals, 4 colours', n: 4, fn: (r, c) => (r + c) % 4, verdict: t => ['no', `Every strip covers one square of each colour, so 25 strips would need 25 of each. The board has ${t.join(', ')}. Impossible.`] }
+    ]
+  }));
+  C.mount('w-domino', h => C.dominoBoard(h, { max: 2, start: [[0, 0], [7, 7]], presets: [{ label: 'Opposite corners', cells: [[0, 0], [7, 7]] }, { label: 'One dark, one light', cells: [[0, 0], [4, 7]] }] }));
+  C.mount('w-domino2', h => C.dominoBoard(h, { start: [[0, 1], [1, 0], [5, 5], [7, 7]], presets: [{ label: 'Balanced but stuck', cells: [[0, 1], [1, 0], [5, 5], [7, 7]] }] }));
+  C.mount('w-knight', C.knight);
+  C.mount('w-explore', C.stripExplorer);
+  C.mount('w-rects', C.rects);
+  C.mount('w-necklaces', C.necklaces);
+  C.mount('w-gallery', C.gallery);
+  C.mount('w-party', C.party);
+  C.mount('w-erdos', C.erdos);
+  C.mount('w-sperner', C.sperner);
+  C.mount('w-timetable', h => C.graphColour(h, C.TIMETABLE));
+  C.mount('w-moser', h => C.graphColour(h, C.moser()));
+  C.mount('w-plane', C.plane);
+  C.mount('w-final', h => C.stripBoard(h, {
+    rows: 8, cols: 8, k: 3, hole: [0, 0], movableHole: true,
+    plainNote: 'One corner is missing. Click a square to lay a strip of three. Can you cover the other 63 squares?',
+    modes: [
+      { id: 'none', label: 'No colours' },
+      { id: 'd1', label: 'Diagonals ↘', n: 3, fn: (r, c) => (r + c) % 3, verdict: (t, need) => [t.every(v => v === need) ? 'hmm' : 'no', t.every(v => v === need) ? `${t.join(', ')}: balanced. This colouring has no objection.` : `21 strips need 21 of each colour. The board has ${t.join(', ')}.`] },
+      { id: 'd2', label: 'Diagonals ↙', n: 3, fn: (r, c) => ((r - c) % 3 + 3) % 3, verdict: (t, need) => [t.every(v => v === need) ? 'hmm' : 'no', t.every(v => v === need) ? `${t.join(', ')}: balanced. This colouring has no objection.` : `21 strips need 21 of each colour. The board has ${t.join(', ')}.`] }
+    ]
+  }));
+  const bar = document.getElementById('progress');
+  if (bar) addEventListener('scroll', () => { const d = document.documentElement; bar.style.width = (100 * d.scrollTop / (d.scrollHeight - d.clientHeight)) + '%'; }, { passive: true });
+})();
+</script>
+</body>
+</html>
