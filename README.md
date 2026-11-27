@@ -29,7 +29,6 @@ By Tanav Gupta, for the Vedanta Ganita Samanwaya (VGS) exploratory phase, 2026.
 index.html        the whole page: text, design and every figure, in one file
 check_claims.py   checks every number quoted on the page
 ```
-**Read it here: https://tanav8570.github.io/Power_of-Colouring/**
 Clicking `index.html` in the file list only shows its code. To see the page, use the link above, or download `index.html` and open it in any browser (Chrome, Safari, Firefox).
 
 ## Check the numbers
