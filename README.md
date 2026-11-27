@@ -29,8 +29,8 @@ By Tanav Gupta, for the Vedanta Ganita Samanwaya (VGS) exploratory phase, 2026.
 index.html        the whole page: text, design and every figure, in one file
 check_claims.py   checks every number quoted on the page
 ```
-
-Open `index.html` in any browser. There is nothing to install.
+**Read it here: https://tanav8570.github.io/Power_of-Colouring/**
+Clicking `index.html` in the file list only shows its code. To see the page, use the link above, or download `index.html` and open it in any browser (Chrome, Safari, Firefox).
 
 ## Check the numbers
 
@@ -41,3 +41,5 @@ python3 check_claims.py
 ## How this was made
 
 The starting point, the diagonal colouring of grid problems, comes from my own olympiad practice, and I described it in my application to this camp. To turn it into this page I worked with Claude, an AI model made by Anthropic. Claude helped me survey the literature, suggested several of the problems, and wrote the code for the interactive figures. Every number on the page was checked by a program, `check_claims.py`. I tried to include every colouring problem that I once stumbled upon, or in which colouring is applied beautifully.
+
+
